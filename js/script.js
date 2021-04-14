@@ -43,30 +43,28 @@
 
   const optArticleSelector = '.post',
     optTitleSelector = '.post-title',
-    optTitleListSelector = '.titles';
+    optTitleListSelector = '.titles',
+    optArticleTagsSelector = '.post-tags .list';
 
   function generateTitleLinks(){
-    /* remove contents of titleList */
+    /* [DONE] remove contents of titleList */
     const titleList = document.querySelector(optTitleListSelector);
     titleList.innerHTML = '';
 
-    /* find all the articles and save them to variable: articles */
+    /* [DONE] find all the articles and save them to variable: articles */
     const articles = document.querySelectorAll(optArticleSelector);
 
     let html = '';
     for(let article of articles){
-      /* get the article id */
+      /* [DONE] get the article id */
       const articleId = article.getAttribute('id');
-      /* find the title element */
-      /* get the title from the title element */
+      /* [DONE] find the title element */
+      /* [DONE] get the title from the title element */
       const articleTitle = article.querySelector(optTitleSelector).innerHTML;
-      //console.log('articleTitle:', articleTitle);
-
-      /* create HTML of the link */
+      /* [DONE] create HTML of the link */
       const linkHTML = '<li><a href="#' + articleId + '"><span>' + articleTitle + '</span></a></li>';
-      //console.log('linkHTML:', linkHTML);
 
-      /* insert link into html variable */
+      /* [DONE] insert link into html variable */
       html = html + linkHTML;
       //console.log('html:', html);
     } //end for
@@ -80,5 +78,37 @@
   for(let link of links){
     link.addEventListener('click', titleClickHandler);
   }
+
+
+  function generateTags(){
+    /* [DONE] find all articles */
+    const articles = document.querySelectorAll(optArticleSelector);
+
+    /* [DONE] START LOOP: for every article: */
+    for(let article of articles){
+      /* [DONE] find tags wrapper */
+      const tagsWrappers = article.querySelector(optArticleTagsSelector);
+      /* [DONE] make html variable with empty string */
+      let html = '';
+      /* [DONE] get tags from data-tags attribute */
+      const articleTags = article.getAttribute('data-tags');
+      /* [DONE] split tags into array */
+      const articleTagsArray = articleTags.split(' ');
+      /* [DONE] START LOOP: for each tag */
+      for(let tag of articleTagsArray){
+        /* [DONE] generate HTML of the link */
+        const linkHTML = '<li><a href="#tag-' + tag + '"><span>' + tag + '</span></a></li>';
+        /* add generated code to html variable */
+        html = html + linkHTML;
+        /* [DONE] END LOOP: for each tag */
+      }
+      /* [DONE] insert HTML of all the links into the tags wrapper */
+      tagsWrappers.innerHTML = html;
+      /* [DONE] END LOOP: for every article: */
+    }
+  }
+
+  generateTags();
+
 
 }
