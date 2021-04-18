@@ -43,7 +43,8 @@
     optAuthorListSelector = '.authors',
     optTagsListSelector = '.tags.list',
     optCloudClassCount = 5,
-    optCloudClassPrefix = 'tag-size-';
+    optCloudClassPrefix = 'tag-size-',
+    optCloudAuthorClassPrefix = 'author-size-';
 
   function generateTitleLinks(customSelector = ''){
     /* [DONE] remove contents of titleList */
@@ -76,35 +77,6 @@
   } //end generateTitleLinks()
 
   generateTitleLinks();
-
-
-  function generateTags(){
-    /* [DONE] find all articles */
-    const articles = document.querySelectorAll(optArticleSelector);
-
-    /* [DONE] START LOOP: for every article: */
-    for(let article of articles){
-      /* [DONE] find tags wrapper */
-      const tagsWrappers = article.querySelector(optArticleTagsSelector);
-      /* [DONE] make html variable with empty string */
-      let html = '';
-      /* [DONE] get tags from data-tags attribute */
-      const articleTags = article.getAttribute('data-tags');
-      /* [DONE] split tags into array */
-      const articleTagsArray = articleTags.split(' ');
-      /* [DONE] START LOOP: for each tag */
-      for(let tag of articleTagsArray){
-        /* [DONE] generate HTML of the link */
-        const linkHTML = '<li><a href="#tag-' + tag + '"><span>' + tag + '</span></a></li>';
-        /* [DONE] add generated code to html variable */
-        html = html + linkHTML;
-        /* [DONE] END LOOP: for each tag */
-      }
-      /* [DONE] insert HTML of all the links into the tags wrapper */
-      tagsWrappers.innerHTML = html;
-      /* [DONE] END LOOP: for every article: */
-    }
-  }
 
   generateTags();
 
@@ -157,23 +129,30 @@
     /*find and authors list*/
     const authorList = document.querySelector(optAuthorListSelector);
 
-    let html = '';
+    let allAuthors = {};
 
     /* [DONE] START LOOP: for every article: */
     for(let article of articles){
       /* [DONE] find authors wrapper */
       const author = article.getAttribute('data-author');
-
-      /*if author not already on the list, add the author*/
-      if(html.search(author)==-1){
-      /* [DONE] generate HTML of the link */
-        const linkHTML = '<li><a href="#author-' + author + '"><span class="author-name">' + author + '</span></a></li>';
-        html = html + linkHTML;
+      if(!allAuthors[author]) {
+      /* [NEW] add tag to allTags object */
+        allAuthors[author] = 1;
+      } else {
+        allAuthors[author]++;
       }
-      /* [DONE] END LOOP: for every article: */
+    }      /* END LOOP: for every article: */
+
+    const authorsParams = calculateTagsParams(allAuthors);
+    let allAuthorsHTML = '';
+
+    for(let author in allAuthors){
+      allAuthorsHTML += '<li><a href="#author-' + author + '" class="' + calculateAuthorClass(allAuthors[author], authorsParams) + '"><span>' + author + '</span></a></li>';
     }
-    authorList.innerHTML = html;
+
+    authorList.innerHTML = allAuthorsHTML;
   }
+
   generateAuthors();
 
   function authorClickHandler(event){
@@ -233,6 +212,10 @@
     const classNumber = Math.floor((count-params.min)/(params.max-params.min) * (optCloudClassCount - 1) + 1 );
     return (optCloudClassPrefix + classNumber);
   }
+  function calculateAuthorClass(count, params){
+    const classNumber = Math.floor((count-params.min)/(params.max-params.min) * (optCloudClassCount - 1) + 1 );
+    return (optCloudAuthorClassPrefix + classNumber);
+  }
 
   function generateTags(){
     /* [NEW] create a new variable allTags with an empty object */
@@ -263,7 +246,6 @@
         } else {
           allTags[tag]++;
         }
-
       /* END LOOP: for each tag */
       }
       /* insert HTML of all the links into the tags wrapper */
@@ -271,10 +253,10 @@
     /* END LOOP: for every article: */
     }
     /* [NEW] find list of tags in right column */
-    const tagList = document.querySelector('.tags');
+    const tagList = document.querySelector(optTagsListSelector);
 
     const tagsParams = calculateTagsParams(allTags);
-    console.log('tagsParams:', tagsParams);
+    //    console.log('tagsParams:', tagsParams);
 
     /* [NEW] create variable for all links HTML code */
     let allTagsHTML = '';
